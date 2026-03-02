@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Selamat Ulang Tahun Cantik!</title>
+  <!-- Tailwind CSS untuk utilitas tata letak cepat -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Library Confetti untuk efek pesta -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap"
+    rel="stylesheet">
+
+  <style>
+    /* Gaya Dasar dan Latar Belakang */
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .font-handwriting {
+      font-family: 'Dancing Script', cursive;
+    }
+
+    /* Animasi Balon Terbang */
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      width: 40px;
+      height: 50px;
+      border-radius: 50%;
+      opacity: 0.8;
+      animation: floatUp 6s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes floatUp {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(-120vh) rotate(20deg);
+        opacity: 0;
+      }
+    }
+
+    /* Tombol Utama */
+    .btn-primary {
+      background-color: #ec4899;
+      color: white;
+      font-weight: bold;
+      padding: 1rem 2.5rem;
+      border-radius: 9999px;
+      font-size: 1.25rem;
+      box-shadow: 0 10px 15px -3px rgba(236, 72, 153, 0.3);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      background-color: #db2777;
+    }
+
+    /* Kartu Ucapan Utama */
+    .card-birthday {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 2rem;
+      padding: 2.5rem;
+      text-align: center;
+      border: 4px solid #e38080;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sub-heading {
+      color: #f472b6;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+    }
+
+    /* Pesan Bertahap */
+    .message-item {
+      opacity: 0;
+      transform: translateY(15px);
+      transition: all 1s ease-in-out;
+      margin-bottom: 0.8rem;
+      color: #4b5563;
+    }
+
+    /* Pembungkus Gambar */
+    .image-wrapper {
+      margin: 1.5rem 0;
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 3px solid white;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .birthday-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    /* Tombol Kejutan Tambahan */
+    .btn-surprise {
+      background: #facc15;
+      color: #854d0e;
+      font-weight: bold;
+      padding: 0.6rem 1.5rem;
+      border-radius: 9999px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn-surprise:active {
+      transform: scale(0.9);
+    }
+
+    /* Helper Kelas */
+    .hidden-content {
+      display: none !important;
+    }
+
+    .fade-in {
+      animation: fadeIn 1.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 2rem;
+      color: #db2777;
+      font-weight: 600;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* Layar Countdown */
+    #countdown-screen {
+      background-color: #fdf2f8;
+    }
+  </style>
+</head>
+
+<body class="p-4">
+
+  <!-- Kontainer Animasi Balon -->
+  <div id="balloon-container"></div>
+
+  <!-- 1. Layar Awal (Tombol Pemicu) -->
+  <div id="welcome-screen" class="text-center z-20">
+    <h1 class="text-5xl font-handwriting text-pink-600 mb-6 drop-shadow-md">Ada kejutan untukmu...</h1>
+    <button onclick="initSequence()" class="btn-primary">
+      Buka Sekarang 🎁
+    </button>
+  </div>
+
+  <!-- 2. Layar Hitung Mundur (Intro 3 Detik) -->
+  <div id="countdown-screen" class="hidden-content fixed inset-0 flex items-center justify-center z-30">
+    <div id="countdown-number" class="text-9xl font-bold text-pink-500 transition-all duration-500 scale-150 opacity-0">
+      3
+    </div>
+  </div>
+
+  <!-- 3. Konten Utama Ucapan -->
+  <div id="main-content" class="hidden-content w-full max-w-lg z-10">
+    <div class="card-birthday fade-in">
+      <div class="mb-6">
+        <span class="text-6xl" role="img" aria-label="kue">🎂</span>
+        <h1 class="text-4xl font-handwriting text-pink-600 mt-4">Selamat Ulang Tahun Sayangkuu Cancikkuu!</h1>
+        <p class="sub-heading">Hari Spesial Untuk Orang Spesial</p>
+      </div>
+
+      <div id="message-box" class="message-container italic leading-relaxed text-lg">
+        <p id="msg-1" class="message-item">Halo Cantik!</p>
+        <p id="msg-2" class="message-item">Di hari yang indah ini, aku cuma mau bilang...</p>
+        <p id="msg-3" class="message-item">Semoga harimu penuh dengan tawa, hatimu penuh dengan cinta, dan semua
+          impianmu menjadi nyata.</p>
+        <p id="msg-4" class="message-item">Terima kasih sudah menjadi bagian dari hidupku. ✨</p>
+      </div>
+
+      <div class="image-wrapper">
+        <img src="imelda3.jpeg" alt="Dekorasi Ulang Tahun" class="birthday-img">
+      </div>
+
+      <button onclick="fireConfetti()" class="btn-surprise">
+        Klik untuk Kejutan Lagi! 🎉
+      </button>
+    </div>
+    <p class="footer-note">DIBUAT DENGAN ❤️ UNTUKMU</p>
+  </div>
+
+  <!-- Audio Musik Latar -->
+  <audio id="bg-music" loop>
+    <source src="bulan sutena.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    // Fungsi menciptakan balon secara acak
+    function createBalloon() {
+      const container = document.getElementById('balloon-container');
+      const balloon = document.createElement('div');
+      const colors = ['#f472b6', '#fb7185', '#38bdf8', '#fbbf24', '#a78bfa'];
+      balloon.className = 'balloon';
+      balloon.style.left = Math.random() * 100 + 'vw';
+      balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      balloon.style.animationDuration = (Math.random() * 3 + 4) + 's';
+      container.appendChild(balloon);
+      setTimeout(() => balloon.remove(), 7000);
+    }
+
+    // Tahap 1: Sembunyikan tombol, mulai countdown
+    function initSequence() {
+      document.getElementById('welcome-screen').classList.add('hidden-content');
+      startCountdown();
+    }
+
+    // Tahap 2: Hitung mundur 3 detik
+    function startCountdown() {
+      const screen = document.getElementById('countdown-screen');
+      const number = document.getElementById('countdown-number');
+      screen.classList.remove('hidden-content');
+
+      let count = 3;
+      const interval = setInterval(() => {
+        // Animasi masuk angka
+        number.innerText = count;
+        number.classList.remove('scale-150', 'opacity-0');
+        number.classList.add('scale-100', 'opacity-100');
+
+        // Animasi keluar angka sebelum ganti
+        setTimeout(() => {
+          number.classList.remove('scale-100', 'opacity-100');
+          number.classList.add('scale-150', 'opacity-0');
+        }, 700);
+
+        count--;
+        if (count < 0) {
+          clearInterval(interval);
+          setTimeout(startCelebration, 500);
+        }
+      }, 1000);
+    }
+
+    // Tahap 3: Tampilkan kartu ucapan dan mulai efek
+    function startCelebration() {
+      document.getElementById('countdown-screen').classList.add('hidden-content');
+      document.getElementById('main-content').classList.remove('hidden-content');
+
+      // Putar musik
+      const music = document.getElementById('bg-music');
+      music.play().catch(() => console.log("Musik tidak bisa diputar otomatis"));
+
+      fireConfetti();
+      setInterval(createBalloon, 500);
+      showMessages();
+    }
+
+    // Animasi teks muncul bergantian
+    function showMessages() {
+      const messages = ['msg-1', 'msg-2', 'msg-3', 'msg-4'];
+      messages.forEach((id, index) => {
+        setTimeout(() => {
+          const el = document.getElementById(id);
+          el.style.opacity = '1';
+          el.style.transform = 'translateY(0)';
+        }, (index + 1) * 1500);
+      });
+    }
+
+    // Efek ledakan kertas (confetti)
+    function fireConfetti() {
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
+    }
+  </script>
+</body>
+
+</html>
